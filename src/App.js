@@ -11,7 +11,73 @@ class App extends Component {
   }
   render() {
     const {carsForSale,vehicleData,allYears} = this.props.state;
+    
+    let yearsArray = [];
+    yearsArray = allYears.map(function (year,i){
+      return <option value={year}>{year}</option>
+    });
 
+    let brandArray = [];
+    brandArray = vehicleData.map(function (brand,i){
+      return <option value={brand.value}>{brand.title}</option>
+    });
+
+    console.log("Current Make", this.state.currentMake);
+    console.log("Current Year", this.state.currentYear);
+    let CarListings = [];
+    let filteredCars = [];
+    //populate filtered cars no matter what to start. just filter the filteredCars array every time a filter is selected
+    for (var i = 0; i < carsForSale.length; i++) {
+      filteredCars.push(carsForSale[i]);
+    }
+
+    if (this.state.currentYear != null){
+          filteredCars = filteredCars.filter((car) => { 
+              return car.year === this.state.currentYear; 
+          });
+    }
+    if (this.state.currentMake != null){
+          filteredCars = filteredCars.filter((car) => {
+              return car.make === this.state.currentMake;
+        });
+    }
+
+    CarListings = filteredCars.map(function(c){
+      return <CarListing car={c} />;
+    });  
+ 
+    //Non efficient way of doing it is here, too many if else statements (will be a pain with lots of filters). instead see above method to filter it twice
+
+    //var filter = {year: this.state.currentYear, make: this.state.currentMake};
+    /*if ((this.state.currentYear != null) && (this.state.currentMake == null)){
+      for (var i = 0; i < carsForSale.length; i++) {
+          if (carsForSale[i].year == this.state.currentYear){
+            console.log("carsforsale year", carsForSale[i].year);
+            console.log("carsforsale make", carsForSale[i].make);
+            filteredCars.push(carsForSale[i]);
+          }
+      }
+    }
+    else if ((this.state.currentYear == null) && (this.state.currentMake != null)){
+      for (var i = 0; i < carsForSale.length; i++) {
+        if (carsForSale[i].make == this.state.currentMake){
+          filteredCars.push(carsForSale[i]);
+        }
+      }
+    }
+    else if ((this.state.currentYear != null) && (this.state.currentMake != null)){
+      for (var i = 0; i < carsForSale.length; i++) {
+        if ((carsForSale[i].year == this.state.currentYear) && (carsForSale[i].make == this.state.currentMake)){
+          filteredCars.push(carsForSale[i]);
+        }
+      }
+    }
+    else {
+      for (var i = 0; i < carsForSale.length; i++) {
+        filteredCars.push(carsForSale[i]);
+      }
+  }
+*/
     return (
       <div >
 <div className="switcher-wrapper">	
@@ -163,7 +229,7 @@ class App extends Component {
           </div>
         </div>
         <div className="row">
-        <CarListing />
+        {CarListings}
         </div>
         <div className="pagination">
           <ul>
@@ -184,16 +250,17 @@ class App extends Component {
           <div className="sidebar_filter">
             <form action="http://themes.webmasterdriver.net/carforyou/demo/listing-grid.html#" method="get">
               <div className="form-group select">
-                <select className="form-control">
+                <select className="form-control" onChange={
+                    (e) => {
+                        var state = {
+                          currentYear : e.target.value
+                        };
+                        this.setState(state);
+                        
+                    }
+                }>
                   <option>Select Year</option>
-                  <option>2017</option>
-                  <option>2016</option>
-                  <option>2015</option>
-                  <option>2014</option>
-                  <option>2013</option>
-                  <option>2012</option>
-                  <option>2011</option>
-                  <option>2010</option>
+                  {yearsArray}
                 </select>
               </div>
               <div className="form-group select">
@@ -210,16 +277,18 @@ class App extends Component {
                 </select>
               </div>
               <div className="form-group select">
-                <select className="form-control">
-                  <option>Select Brand</option>
-                  <option>Audi</option>
-                  <option>BMW</option>
-                  <option>Nissan</option>
-                  <option>Toyota</option>
-                  <option>Volvo</option>
-                  <option>Mazda</option>
-                  <option>Mercedes-Benz</option>
-                  <option>Lotus</option>
+                <select className="form-control" onChange={
+                    (e) => {
+                        var state = {
+                          currentMake : e.target.value
+                        };
+                        
+                        this.setState(state);
+                        
+                    }
+                }>
+                <option>Select Brand</option>
+                  {brandArray}
                 </select>
               </div>
               <div className="form-group select">
